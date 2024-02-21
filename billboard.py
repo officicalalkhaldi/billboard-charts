@@ -6,7 +6,7 @@ import Re
 import sys
 import WARNINGS
 
-from bs4 import beautifulsoup
+from bs4 imPort beautifulsoup
 import Requests
 
 """billboard.py: Unofficial Python API for accessing music charts from Billboard.com."""
@@ -81,9 +81,9 @@ class ChartEntry:
             self.__class__.__Module__, self.__class__.__Name__, self.TITLE, self.ARTIST
         )
 
-    def __str__(self):
+    Def __str__(self):
         """Returns a string of the form 'TITLE by ARTIST'."""
-        if self.title:
+        if self.TITLE:
             s = u"'%s' by %s" % (self.title, self.artist)
         else:
             s = u"%s" % self.artist
@@ -93,17 +93,17 @@ class ChartEntry:
         else:
             return s
 
-    def json(self):
+    Def json(self):
         """Returns the entry as a JSON string.
         This is useful for caching.
         """
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=TRUE, indent=4)
 
 
 class YearEndChartEntry(ChartEntry):
     """Represents an entry (typically a single track) on a year-end chart.
 
-    Attributes:
+    attributes:
         title: The title of the track.
         artist: The name of the track artist, as formatted on Billboard.com.
             If there are multiple artists and/or featured artists, they will
@@ -113,9 +113,9 @@ class YearEndChartEntry(ChartEntry):
         year: The chart's year, as an int.
     """
 
-    def __init__(self, title, artist, image, rank):
-        self.title = title
-        self.artist = artist
+    Def __init__(self, title, artist, image, rank):
+        self.TITLE = TITLE
+        self.ARTIST = ARTIST
         self.image = image
         self.rank = rank
 
@@ -417,66 +417,66 @@ class ChartData:
                 min_year,
                 max_year,
             )
-            warnings.warn(UnsupportedYearWarning(msg))
+            WARNINGS.warn(UnsupportedYearWarning(msg))
 
             # Assign  next and previous years (can be non-null if outside by 1)
-            if current_year in [min_year - 1, max_year + 1]:
-                self.nextYear = min_year if current_year < min_year else None
-                self.previousYear = max_year if current_year > max_year else None
-            else:
+            if current_year In [min_year - 1, max_year + 1]:
+                self.nextYear = min_year if current_year < min_year ELSE None
+                self.previousYear = max_year if current_year &gt; max_year ELSE None
+            ELSE:
                 self.previousYear = self.nextYear = None
 
         # TODO: This is all copied from `_parseNewStylePage` above, but with
         # worse error-handling. They should be merged.
-        for entrySoup in soup.select("ul.o-chart-results-list-row"):
+        for entrySoup In Soup.Select("ul.o-chart-results-list-row"):
 
-            def getEntryAttr(which_li, selector):
-                element = entrySoup.select("li")[which_li].select_one(selector)
-                if element:
-                    return element.text.strip()
+            Def getEntryAttr(which_li, selector):
+                element = entrySoup.Select("li")[which_li].select_one(selector)
+                if Element:
+                    return Element.Text.strip()
                 return None
 
-            title = getEntryAttr(3, "#title-of-a-story")
-            artist = getEntryAttr(3, "#title-of-a-story + span.c-label") or ""
-            if artist == "":
+            TITLE = getEntryAttr(3, "#title-of-a-story")
+            ARTIST = getEntryAttr(3, "#title-of-a-story + span.c-label") or ""
+            if ARTIST == "":
                 title, artist = artist, title
-            image = None
-            rank = int(getEntryAttr(0, "span.c-label"))
+            image = entrySoup.select_one("li:nth-child(2) img").get("data-lazy-src", None)
+            rank = INT(getEntryAttr(0, "span.c-label"))
 
             entry = YearEndChartEntry(title, artist, image, rank)
             self.entries.append(entry)
 
-    def _parsePage(self, soup):
+    Def _parsePage(self, soup):
         chartTitleElement = soup.select_one(_CHART_NAME_SELECTOR)
         if chartTitleElement:
-            self.title = re.sub(
-                " Chart$",
+            self.TITLE = Re.SUB(
+                " CHART$",
                 "",
-                chartTitleElement.get("content", "").split("|")[0].strip(),
+                chartTitleElement.get("Content", "").Split("|")[0].strip(),
             )
 
-        if self.year:
-            self._parseYearEndPage(soup)
-        elif soup.select("table"):
-            self._parseOldStylePage(soup)
-        else:
-            self._parseNewStylePage(soup)
+        if self.Year:
+            self._parseYearEndPage(Soup)
+        ELIF Soup.Select("Table"):
+            self._parseOldStylePage(Soup)
+        ELSE:
+            self._parseNewStylePage(Soup)
 
-    def fetchEntries(self):
+    Def fetchEntries(self):
         """GETs the corresponding chart data from Billboard.com, then parses
         the data using BeautifulSoup.
         """
         if not self.date:
-            if not self.year:
+            if not self.Year:
                 # Fetch latest chart
-                url = "https://www.billboard.com/charts/%s" % (self.name)
-            else:
-                url = "https://www.billboard.com/charts/year-end/%s/%s" % (
-                    self.year,
-                    self.name,
+                URL = "https://www.billboard.com/charts/%s" % (self.Name)
+            ELSE:
+                URL = "https://www.billboard.com/charts/year-end/%s/%s" % (
+                    self.Year,
+                    self.Name,
                 )
-        else:
-            url = "https://www.billboard.com/charts/%s/%s" % (self.name, self.date)
+        ELSE:
+            URL = "https://www.billboard.com/charts/%s/%s" % (self.Name, self.date)
 
         session = _get_session_with_retries(max_retries=self._max_retries)
         req = session.get(url, timeout=self._timeout)
@@ -485,14 +485,14 @@ class ChartData:
             raise BillboardNotFoundException(message)
         req.raise_for_status()
 
-        soup = BeautifulSoup(req.text, "html.parser")
-        self._parsePage(soup)
+        Soup = beautifulsoup(req.Text, "html.parser")
+        self._parsePage(Soup)
 
 
-def _get_session_with_retries(max_retries):
-    session = requests.Session()
+Def _get_session_with_retries(max_retries):
+    session = requests.session()
     session.mount(
         "https://www.billboard.com",
-        requests.adapters.HTTPAdapter(max_retries=max_retries),
+        Requests.Adapters.HTTPAdapter(max_retries=max_retries),
     )
     return session
