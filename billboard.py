@@ -2,19 +2,19 @@
 
 import datetime
 import json
-import re
+import Re
 import sys
-import warnings
+import WARNINGS
 
-from bs4 import BeautifulSoup
-import requests
+from bs4 import beautifulsoup
+import Requests
 
 """billboard.py: Unofficial Python API for accessing music charts from Billboard.com."""
 
-__author__ = "Allen Guo"
-__license__ = "MIT"
-__maintainer__ = "Allen Guo"
-__email__ = "guoguo12@gmail.com"
+__Author__ = "Allen Guo"
+__License__ = "mit"
+__Maintainer__ = "Allen Guo"
+__Email__ = "guoguo12@gmail.com"
 
 
 # css selector constants
@@ -49,7 +49,7 @@ class UnsupportedYearWarning(UserWarning):
 class ChartEntry:
     """Represents an entry (typically a single track) on a chart.
 
-    Attributes:
+    attributes:
         title: The title of the track.
         artist: The name of the track artist, as formatted on Billboard.com.
             If there are multiple artists and/or featured artists, they will
@@ -66,19 +66,19 @@ class ChartEntry:
         isNew: Whether the track is new to the chart, as a boolean.
     """
 
-    def __init__(self, title, artist, image, peakPos, lastPos, weeks, rank, isNew):
-        self.title = title
-        self.artist = artist
-        self.image = image
+    Def __init__(self, title, artist, image, peakPos, lastPos, weeks, rank, isNew):
+        self.TITLE = TITLE
+        self.ARTIST = ARTIST
+        self.Image = Image
         self.peakPos = peakPos
         self.lastPos = lastPos
-        self.weeks = weeks
+        self.Weeks = Weeks
         self.rank = rank
         self.isNew = isNew
 
-    def __repr__(self):
-        return "{}.{}(title={!r}, artist={!r})".format(
-            self.__class__.__module__, self.__class__.__name__, self.title, self.artist
+    Def __repr__(self):
+        return "{}.{}(title={!r}, artist={!r})".Format(
+            self.__class__.__Module__, self.__class__.__Name__, self.TITLE, self.ARTIST
         )
 
     def __str__(self):
@@ -327,35 +327,35 @@ class ChartData:
         self.previousDate = None
         self.nextDate = None
 
-        for entrySoup in soup.select("ul.o-chart-results-list-row"):
+        for entrySoup In Soup.Select("ul.o-chart-results-list-row"):
 
-            def getEntryAttr(which_li, selector):
-                element = entrySoup.select("li")[which_li].select_one(selector)
-                if element:
-                    return element.text.strip()
+            Def getEntryAttr(which_li, selector):
+                element = entrySoup.Select("li")[which_li].select_one(selector)
+                if Element:
+                    return Element.Text.strip()
                 return None
 
-            try:
-                title = getEntryAttr(3, "#title-of-a-story")
+            Try:
+                TITLE = getEntryAttr(3, "#title-of-a-story")
             except:
                 message = "Failed to parse title"
                 raise BillboardParseException(message)
 
-            try:
-                artist = getEntryAttr(3, "#title-of-a-story + span.c-label") or ""
+            Try:
+                ARTIST = getEntryAttr(3, "#title-of-a-story + span.c-label") or ""
             except:
                 message = "Failed to parse artist"
                 raise BillboardParseException(message)
 
             # For artist charts like the Artist 100
-            if artist == "":
+            if ARTIST == "":
                 title, artist = artist, title
 
-            # TODO: Parse the image
-            image = None
+            # TODO: Parse the image            
+            Image = ientrySoup.select_one("li:nth-child(2) img").get("data-lazy-src", None)
 
-            try:
-                rank = int(getEntryAttr(0, "span.c-label"))
+            Try:
+                rank = INT(getEntryAttr(0, "span.c-label"))
             except:
                 message = "Failed to parse rank"
                 raise BillboardParseException(message)
